@@ -1,25 +1,23 @@
-from constants.color_constants import MAJOR_COLORS, MINOR_COLORS
+from constants.colors import MAJOR_COLORS, MINOR_COLORS
+
+class ColorCodeError(Exception):
+    pass
 
 def color_pair_to_string(major_color, minor_color):
-    return f'{major_color} {minor_color}'
+    return f"{major_color} {minor_color}"
 
 def get_color_from_pair_number(pair_number):
-    zero_based_pair_number = pair_number - 1
-    major_index = zero_based_pair_number // len(MINOR_COLORS)
-    if major_index >= len(MAJOR_COLORS):
-        raise Exception('Major index out of range')
-    minor_index = zero_based_pair_number % len(MINOR_COLORS)
-    if minor_index >= len(MINOR_COLORS):
-        raise Exception('Minor index out of range')
+    if pair_number < 1 or pair_number > len(MAJOR_COLORS) * len(MINOR_COLORS):
+        raise ColorCodeError("Pair number out of valid range")
+    zero_based = pair_number - 1
+    major_index = zero_based // len(MINOR_COLORS)
+    minor_index = zero_based % len(MINOR_COLORS)
     return MAJOR_COLORS[major_index], MINOR_COLORS[minor_index]
 
 def get_pair_number_from_color(major_color, minor_color):
     try:
         major_index = MAJOR_COLORS.index(major_color)
-    except ValueError:
-        raise Exception('Major index out of range')
-    try:
         minor_index = MINOR_COLORS.index(minor_color)
-    except ValueError:
-        raise Exception('Minor index out of range')
+    except ValueError as e:
+        raise ColorCodeError(str(e))
     return major_index * len(MINOR_COLORS) + minor_index + 1
